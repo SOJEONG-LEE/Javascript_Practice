@@ -22,10 +22,12 @@ var app = http.createServer((request, response) => {
 
     if (pathname === '/') {
         // console.log('url.parse(_url, true)', url.parse(_url, true))
-
         if (queryData.id === undefined) {
-            fs.readFile(`data/${queryData.id}.txt`, 'utf-8', (err, description) => {
-                // if(err) throw err;
+            // fs.readFile(`data/${queryData.id}.txt`, 'utf-8', (err, description) => {
+            // if(err) throw err;
+            fs.readdir('./data', (err, fileList) => {
+                // var list = fileList.map(file => `<li>${file}</li>`).toString().replace(/,/g,'');
+                var list = fileList.map(file => `<li><a href="/?id=${file}">${file}</a></li>`).join('');
                 var title = 'Welcome';
                 var description = 'Hello, Node.js';
                 var template = `
@@ -37,10 +39,13 @@ var app = http.createServer((request, response) => {
         </head>
         <body>
           <h1><a href="/">WEB</a></h1>
-          <ol>
+          <!--<ol>
             <li><a href="/?id=HTML">HTML</a></li>
             <li><a href="/?id=CSS">CSS</a></li>
             <li><a href="/?id=JavaScript">JavaScript</a></li>
+          </ol>-->
+          <ol>
+            ${list}
           </ol>
           <h2>${title}</h2>
           <p>${description}</p>
@@ -50,11 +55,17 @@ var app = http.createServer((request, response) => {
                 response.writeHead(200);
                 response.end(template);
             });
+
+            // });
         } else {
-            fs.readFile(`data/${queryData.id}.txt`, 'utf-8', (err, description) => {
-                // if(err) throw err;
-                var title = queryData.id;
-                var template = `
+            fs.readdir('./data', (err, fileList) => {
+                // console.log(fileList);
+                // var list = fileList.map(file => `<li>${file}</li>`).toString().replace(/,/g,'');
+                var list = fileList.map(file => `<li><a href="/?id=${file}">${file}</a></li>`).join('');
+                fs.readFile(`data/${queryData.id}`, 'utf-8', (err, description) => {
+                    // if(err) throw err;
+                    var title = queryData.id;
+                    var template = `
         <!doctype html>
         <html>
         <head>
@@ -64,17 +75,16 @@ var app = http.createServer((request, response) => {
         <body>
           <h1><a href="/">WEB</a></h1>
           <ol>
-            <li><a href="/?id=HTML">HTML</a></li>
-            <li><a href="/?id=CSS">CSS</a></li>
-            <li><a href="/?id=JavaScript">JavaScript</a></li>
+            ${list}
           </ol>
           <h2>${title}</h2>
           <p>${description}</p>
         </body>
         </html>
         `;
-                response.writeHead(200);
-                response.end(template);
+                    response.writeHead(200);
+                    response.end(template);
+                });
             });
         }
 
